@@ -259,10 +259,14 @@
             allChapters =
                 data
                     .filter(
-                        x =>
-                            x.type === "file"
-                            &&
+                    x =>
+                        x.type === "file"
+                        &&
+                        (
+                            x.name.endsWith(".txt")
+                            ||
                             x.name.endsWith(".enc")
+                        )
                     )
                     .sort(
                         (a, b) =>
