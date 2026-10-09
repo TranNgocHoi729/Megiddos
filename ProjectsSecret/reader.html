@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Novel Reader</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #121212;
+            color: white;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        .header {
+            height: 60px;
+            background: #1f1f1f;
+            border-bottom: 1px solid #333;
+
+            display: flex;
+            align-items: center;
+            gap: 12px;
+
+            padding: 0 20px;
+        }
+
+        .btn {
+            border: none;
+            cursor: pointer;
+
+            color: white;
+            background: #4f8cff;
+
+            padding: 8px 14px;
+            border-radius: 6px;
+        }
+
+        .btn:hover {
+            background: #3c73d9;
+        }
+
+        .reader-container {
+            max-width: 1000px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+
+        .chapter-title {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .content {
+            background: #1f1f1f;
+            border-radius: 10px;
+
+            padding: 24px;
+
+            line-height: 1.8;
+            font-size: 18px;
+
+            min-height: 500px;
+        }
+
+        .loading {
+            text-align: center;
+            color: #999;
+            padding: 40px;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+
+            margin-top: 20px;
+        }
+
+        img {
+            max-width: 100%;
+            display: block;
+            margin: 12px auto;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="header">
+    <button class="btn" onclick="goBack()">
+        ← Chapters
+    </button>
+</div>
+
+<div class="reader-container">
+
+    <h2
+        id="chapterTitle"
+        class="chapter-title">
+        Loading...
+    </h2>
+
+    <div
+        id="content"
+        class="content">
+
+        <div class="loading">
+            Đang tải nội dung...
+        </div>
+
+    </div>
+
+    <div class="navigation">
+
+        <button
+            class="btn"
+            onclick="goPrevious()">
+            ← Previous
+        </button>
+
+        <button
+            class="btn"
+            onclick="goNext()">
+            Next →
+        </button>
+
+    </div>
+
+</div>
+
+<script>
+
+    const params = new URLSearchParams(
+        window.location.search
+    );
+
+    const story =
+        params.get("story");
+
+    const chapter =
+        params.get("chapter");
+
+    checkLogin();
+    loadChapter();
+
+    function checkLogin() {
+
+        if (
+            sessionStorage.getItem("loggedIn")
+            !== "true"
+        ) {
+
+            window.location.href =
+                "index.html";
+        }
+    }
+
+    function goBack() {
+
+        window.location.href =
+            `story.html?story=${encodeURIComponent(story)}`;
+    }
+
+    async function loadChapter() {
+
+        try {
+
+            const content =
+                document.getElementById(
+                    "content"
+                );
+
+            const title =
+                document.getElementById(
+                    "chapterTitle"
+                );
+
+            title.innerText =
+                chapter || "Chapter";
+
+            const response =
+                await fetch(
+                    `data/${story}/${chapter}`
+                );
+
+            if (!response.ok) {
+
+                showFallback();
+                return;
+            }
+
+            const encrypted =
+                await response.text();
+
+            const html =
+                await decrypt(encrypted);
+
+            if (
+                !html ||
+                html.trim().length === 0
+            ) {
+
+                showFallback();
+                return;
+            }
+
+            content.innerHTML =
+                html;
+        }
+        catch (error) {
+
+            console.error(error);
+
+            showFallback();
+        }
+    }
+
+    function showFallback() {
+
+        document.getElementById(
+            "content"
+        ).innerHTML =
+        `
+        <div
+            style="
+                text-align:center;
+                color:#aaa;
+                padding:60px;
+            ">
+            Truyện đang cập nhật
+        </div>
+        `;
+    }
+
+    async function decrypt(cipherText) {
+
+        //
+        // TODO:
+    }

@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Novel Reader</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #121212;
+            color: #ffffff;
+            font-family: Arial, Helvetica, sans-serif;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            width: 100vw;
+            height: 100vh;
+        }
+
+        .login-container {
+            width: 400px;
+            background: #1f1f1f;
+            padding: 32px;
+            border-radius: 12px;
+            box-shadow: 0 0 20px rgba(0,0,0,.4);
+        }
+
+        .title {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .title h1 {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .title p {
+            color: #999;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #444;
+            background: #2a2a2a;
+            color: white;
+            border-radius: 6px;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: #4f8cff;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+
+            background: #4f8cff;
+            color: white;
+
+            border: none;
+            border-radius: 6px;
+
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background: #3d73d6;
+        }
+
+        .error {
+            margin-top: 12px;
+            color: #ff6b6b;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="login-container">
+
+        <div class="title">
+            <h1>Novel Reader</h1>
+            <p>Đăng nhập để tiếp tục</p>
+        </div>
+
+        <div class="form-group">
+            <label>Password</label>
+            <input
+                id="password"
+                type="password"
+                placeholder="Nhập mật khẩu..." />
+        </div>
+
+        <button onclick="login()">
+            Login
+        </button>
+
+        <div id="error" class="error"></div>
+
+    </div>
+
+    <script>
+
+        const APP_PASSWORD = "123456";
+
+        if (sessionStorage.getItem("loggedIn") === "true") {
+            window.location.href = "home.html";
+        }
+
+        function login() {
+
+            const password =
+                document.getElementById("password").value;
+
+            const error =
+                document.getElementById("error");
+
+            error.innerText = "";
+
+            if (password === APP_PASSWORD) {
+
+                sessionStorage.setItem(
+                    "loggedIn",
+                    "true"
+                );
+
+                window.location.href =
+                    "home.html";
+
+                return;
+            }
+
+            error.innerText =
+                "Sai mật khẩu";
+        }
+
+        document
+            .getElementById("password")
+            .addEventListener("keypress", e => {
+
+                if (e.key === "Enter") {
+                    login();
+                }
+            });
+
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Story</title>
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #121212;
+            color: white;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        .header {
+
+            height: 60px;
+
+            display: flex;
+            align-items: center;
+            gap: 12px;
+
+            padding: 0 20px;
+
+            background: #1f1f1f;
+            border-bottom: 1px solid #333;
+        }
+
+        .btn {
+
+            border: none;
+            cursor: pointer;
+
+            padding: 8px 16px;
+
+            border-radius: 6px;
+
+            color: white;
+            background: #4f8cff;
+        }
+
+        .btn:hover {
+            background: #3b71d8;
+        }
+
+        .container {
+
+            max-width: 1000px;
+
+            margin: 24px auto;
+
+            padding: 0 20px;
+        }
+
+        .story-title {
+
+            font-size: 32px;
+            font-weight: bold;
+
+            margin-bottom: 20px;
+        }
+
+        .search {
+
+            width: 100%;
+
+            padding: 12px;
+
+            margin-bottom: 20px;
+
+            background: #1f1f1f;
+
+            border: 1px solid #333;
+            border-radius: 8px;
+
+            color: white;
+        }
+
+        .chapter-list {
+
+            display: flex;
+            flex-direction: column;
+
+            gap: 12px;
+        }
+
+        .chapter-card {
+
+            background: #1f1f1f;
+
+            border: 1px solid #333;
+            border-radius: 8px;
+
+            padding: 16px;
+
+            cursor: pointer;
+
+            transition: .2s;
+        }
+
+        .chapter-card:hover {
+
+            border-color: #4f8cff;
+            transform: translateY(-1px);
+        }
+
+        .loading {
+
+            text-align: center;
+
+            color: #999;
+
+            padding: 40px;
+        }
+
+        .fallback {
+
+            background: #1f1f1f;
+
+            border: 1px dashed #444;
+            border-radius: 10px;
+
+            padding: 60px 20px;
+
+            color: #999;
+
+            text-align: center;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div class="header">
+
+    <button class="btn"
+            onclick="goHome()">
+        ← Home
+    </button>
+
+</div>
+
+<div class="container">
+
+    <div id="storyTitle"
+         class="story-title">
+        Loading...
+    </div>
+
+    <input
+        id="searchKeyword"
+        class="search"
+        type="text"
+        placeholder="Tìm chapter..."
+        oninput="filterChapters()" />
+
+    <div id="loading"
+         class="loading">
+
+        Đang tải chapter...
+
+    </div>
+
+    <div id="chapterList"
+         class="chapter-list">
+    </div>
+
+</div>
+
+<script>
+
+    const GITHUB_OWNER =
+        "YOUR_GITHUB_NAME";
+
+    const GITHUB_REPO =
+        "YOUR_REPOSITORY_NAME";
+
+    let allChapters = [];
+
+    const params =
+        new URLSearchParams(
+            window.location.search
+        );
+
+    const story =
+        params.get("story");
+
+    init();
+
+    function init() {
+
+        checkLogin();
+
+        document
+            .getElementById(
+                "storyTitle"
+            ).innerText =
+            story || "Unknown Story";
+
+        loadChapters();
+    }
+
+    function checkLogin() {
+
+        if (
+            sessionStorage.getItem(
+                "loggedIn"
+            ) !== "true"
+        ) {
+
+            window.location.href =
+                "index.html";
+        }
+    }
+
+    function goHome() {
+
+        window.location.href =
+            "home.html";
+    }
+
+    async function loadChapters() {
+
+        const loading =
+            document.getElementById(
+                "loading"
+            );
+
+        const chapterList =
+            document.getElementById(
+                "chapterList"
+            );
+
+        try {
+
+            const url =
+                `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/data/${story}`;
+
+            const response =
+                await fetch(url);
+
+            if (!response.ok) {
+
+                throw new Error(
+                    "Cannot load story."
+                );
+            }
+
+            const data =
+                await response.json();
+
+            allChapters =
+                data
+                    .filter(
+                        x =>
+                            x.type === "file"
+                            &&
+                            x.name.endsWith(".enc")
+                    )
+                    .sort(
+                        (a, b) =>
+                            a.name.localeCompare(
+                                b.name,
+                                undefined,
+                                {
+                                    numeric: true
+                                }
+                            )
+                    );
+
+            loading.style.display =
+                "none";
+
+            renderChapters(
+                allChapters
+            );
+        }
+        catch (error) {
+
+            console.error(error);
+
+            loading.style.display =
+                "none";
+
+            renderFallback();
+        }
+    }
+
+    function renderChapters(
+        chapters
+    ) {
+
+        const container =
+            document.getElementById(
+                "chapterList"
+            );
+
+        container.innerHTML = "";
+
+        if (
+            !chapters ||
+            chapters.length === 0
+        ) {
+
+            renderFallback();
+
+            return;
+        }
+
+        chapters.forEach(
+            chapter => {
+
+                const div =
+                    document.createElement(
+                        "div"
+                    );
+
+                div.className =
+                    "chapter-card";
+
+                div.innerHTML =
+                    `
+                    ${chapter.name.replace(".enc", "")}
+                    `;
+
+                div.onclick =
+                    () => {
+
+                        window.location.href =
+                            `reader.html?story=${encodeURIComponent(story)}&chapter=${encodeURIComponent(chapter.name)}`;
+                    };
+
+                container.appendChild(
+                    div
+                );
+            });
+    }
+
+    function filterChapters() {
+
+        const keyword =
+            document
+            .getElementById(
+                "searchKeyword"
+            )
+            .value
+            .toLowerCase()
+            .trim();
+
+        if (!keyword) {
+
+            renderChapters(
+                allChapters
+            );
+
+            return;
+        }
+
+        const result =
+            allChapters.filter(
+                x =>
+                    x.name
+                     .toLowerCase()
+                     .includes(keyword)
+            );
+
+        renderChapters(
+            result
+        );
+    }
+
+    function renderFallback() {
+
+        document
+            .getElementById(
+                "chapterList"
+            )
+            .innerHTML =
+            `
+            <div class="fallback">
+                Truyện đang cập nhật
+            </div>
+            `;
+    }
+
+</script>
+
+</body>
+
+</html>
