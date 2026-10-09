@@ -180,8 +180,6 @@
 
 <script>
 
-    const GITHUB_OWNER = "TranNgocHoi729";
-    const GITHUB_REPO  = "Megiddos";
 
     let allChapters = [];
 
@@ -240,6 +238,9 @@
             );
 
         try {
+                var GITHUB_OWNER = "TranNgocHoi729";
+                var GITHUB_REPO  = "Megiddos";
+
             const url = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/ProjectsSecret/data/${story}`;
 
             const response =
