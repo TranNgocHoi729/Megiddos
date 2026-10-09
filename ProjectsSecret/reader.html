@@ -1,4 +1,151 @@
-<script>
+
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Novel Reader</title>
+
+    <style>
+
+        body {
+            background: #121212;
+            color: white;
+            font-family: Arial, sans-serif;
+            margin: 0;
+        }
+
+        .header {
+
+            height: 60px;
+
+            display: flex;
+            align-items: center;
+
+            padding: 0 20px;
+
+            background: #1f1f1f;
+
+            border-bottom: 1px solid #333;
+        }
+
+        .btn {
+
+            background: #4f8cff;
+            color: white;
+
+            border: none;
+
+            padding: 10px 16px;
+
+            border-radius: 6px;
+
+            cursor: pointer;
+        }
+
+        .reader-container {
+
+            max-width: 1000px;
+
+            margin: 20px auto;
+
+            padding: 20px;
+        }
+
+        .chapter-title {
+
+            text-align: center;
+
+            margin-bottom: 20px;
+        }
+
+        .content {
+
+            background: #1f1f1f;
+
+            border-radius: 10px;
+
+            padding: 24px;
+
+            min-height: 400px;
+        }
+
+        .navigation {
+
+            margin-top: 20px;
+
+            display: flex;
+
+            justify-content: space-between;
+        }
+
+        img {
+
+            max-width: 100%;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <div class="header">
+
+        <button
+            class="btn"
+            onclick="goBack()">
+
+            ← Chapters
+
+        </button>
+
+    </div>
+
+    <div class="reader-container">
+
+        <h2
+            id="chapterTitle"
+            class="chapter-title">
+
+            Loading...
+
+        </h2>
+
+        <div
+            id="content"
+            class="content">
+
+            Đang tải nội dung...
+
+        </div>
+
+        <div class="navigation">
+
+            <button
+                class="btn"
+                onclick="goPrevious()">
+
+                ← Previous
+
+            </button>
+
+            <button
+                class="btn"
+                onclick="goNext()">
+
+                Next →
+
+            </button>
+
+        </div>
+
+    </div>
+
+    <script>
 
     const params = new URLSearchParams(
         window.location.search
@@ -241,3 +388,7 @@
     }
 
 </script>
+
+</body>
+
+</html>
