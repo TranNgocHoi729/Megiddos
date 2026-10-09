@@ -331,7 +331,10 @@
 
                 div.innerHTML =
                     `
-                    ${chapter.name.replace(".enc", "")}
+                    ${chapter.name
+                        .replace(".enc", "")
+                        .replace(".txt", "")
+                    }
                     `;
 
                 div.onclick =
