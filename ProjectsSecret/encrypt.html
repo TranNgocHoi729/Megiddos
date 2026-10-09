@@ -23,10 +23,6 @@
 
             font-family: Arial, Helvetica, sans-serif;
 
-            display: flex;
-            justify-content: center;
-            align-items: center;
-
             min-height: 100vh;
 
             padding: 20px;
@@ -34,14 +30,15 @@
 
         .container {
 
-            width: 100%;
             max-width: 1000px;
+
+            margin: 0 auto;
 
             background: #1f1f1f;
 
-            padding: 32px;
-
             border-radius: 12px;
+
+            padding: 32px;
 
             box-shadow: 0 0 20px rgba(0,0,0,.4);
         }
@@ -103,7 +100,7 @@
 
         textarea {
 
-            min-height: 350px;
+            height: 400px;
 
             resize: vertical;
 
@@ -125,9 +122,9 @@
 
             border-radius: 6px;
 
-            cursor: pointer;
-
             font-size: 16px;
+
+            cursor: pointer;
         }
 
         button:hover {
@@ -137,11 +134,9 @@
 
         .status {
 
-            margin-top: 16px;
+            margin-top: 20px;
 
             text-align: center;
-
-            font-size: 15px;
         }
 
         .success {
@@ -165,252 +160,369 @@
 
 <body>
 
-    <div class="container">
+<div class="container">
 
-        <div class="title">
-            <h1>Encrypt Story</h1>
-            <p>Encrypt chapter và upload lên GitHub</p>
-        </div>
+    <div class="title">
 
-        <div class="form-group">
+        <h1>Encrypt Story</h1>
 
-            <label>Story Name</label>
-
-            <input
-                id="storyName"
-                type="text"
-                placeholder="USA">
-
-        </div>
-
-        <div class="form-group">
-
-            <label>File Name</label>
-
-            <input
-                id="fileName"
-                type="text"
-                placeholder="Chap1">
-
-        </div>
-
-        <div class="form-group">
-
-            <label>Secret Key</label>
-
-            <input
-                id="secretKey"
-                type="password"
-                placeholder="Enter password">
-
-        </div>
-
-        <div class="form-group">
-
-            <label>Chapter Content</label>
-
-            <textarea
-                id="chapterContent"
-                placeholder="Paste chapter HTML/content here..."></textarea>
-
-        </div>
-
-        <button onclick="encryptAndUpload()">
-            Encrypt & Upload
-        </button>
-
-        <div
-            id="status"
-            class="status">
-        </div>
+        <p>
+            Encrypt chapter và upload lên GitHub
+        </p>
 
     </div>
 
-    <script>
+    <div class="form-group">
 
-        const GITHUB_OWNER =
-            "TranNgocHoi729";
+        <label>Story Name</label>
 
-        const GITHUB_REPO =
-            "Megiddos";
+        <input
+            id="storyName"
+            type="text"
+            placeholder="USA">
 
-        const GITHUB_TOKEN =
-            "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";
+    </div>
 
-        async function encryptAndUpload() {
+    <div class="form-group">
 
-            const story =
-                document
+        <label>File Name</label>
+
+        <input
+            id="fileName"
+            type="text"
+            placeholder="Chap1">
+
+    </div>
+
+    <div class="form-group">
+
+        <label>Secret Key</label>
+
+        <input
+            id="secretKey"
+            type="password">
+
+    </div>
+
+    <div class="form-group">
+
+        <label>Chapter Content</label>
+
+        <textarea
+            id="chapterContent"></textarea>
+
+    </div>
+
+    <button onclick="encryptAndUpload()">
+
+        Encrypt & Upload
+
+    </button>
+
+    <div
+        id="status"
+        class="status">
+    </div>
+
+</div>
+
+<script>
+
+    if (
+        sessionStorage.getItem(
+            "loggedIn"
+        ) !== "true"
+    ) {
+
+        window.location.href =
+            "index.html";
+    }
+
+    const GITHUB_OWNER =
+        "TranNgocHoi729";
+
+    const GITHUB_REPO =
+        "Megiddos";
+
+    const GITHUB_TOKEN = "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";
+
+    async function encryptAndUpload() {
+
+        const story =
+            document
                 .getElementById(
                     "storyName"
                 )
                 .value
                 .trim();
 
-            const fileName =
-                document
+        const fileName =
+            document
                 .getElementById(
                     "fileName"
                 )
                 .value
                 .trim();
 
-            const password =
-                document
+        const password =
+            document
                 .getElementById(
                     "secretKey"
                 )
                 .value;
 
-            const content =
-                document
+        const content =
+            document
                 .getElementById(
                     "chapterContent"
                 )
                 .value;
 
-            const status =
-                document
+        const status =
+            document
                 .getElementById(
                     "status"
                 );
 
-            status.innerHTML = "";
-
-            if (
-                !story ||
-                !fileName ||
-                !password ||
-                !content
-            ) {
-
-                status.innerHTML =
-                    `
-                    <div class="error">
-                        Vui lòng nhập đầy đủ thông tin.
-                    </div>
-                    `;
-
-                return;
-            }
-
-            try {
-
-                status.innerHTML =
-                    `
-                    <div class="loading">
-                        Đang mã hóa và upload...
-                    </div>
-                    `;
-
-                const encrypted =
-                    await encryptText(
-                        content,
-                        password
-                    );
-
-                const path =
-                    `ProjectsSecret/data/${story}/${fileName}.txt`;
-
-                const response =
-                    await fetch(
-                        `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${path}`,
-                        {
-                            method: "PUT",
-
-                            headers: {
-                                Authorization:
-                                    `Bearer ${GITHUB_TOKEN}`,
-
-                                "Content-Type":
-                                    "application/json"
-                            },
-
-                            body: JSON.stringify({
-                                message:
-                                    `Add ${fileName}.txt`,
-                                content:
-                                    btoa(
-                                        encrypted
-                                    )
-                            })
-                        });
-
-                if (!response.ok) {
-
-                    const error =
-                        await response.text();
-
-                    throw new Error(
-                        error
-                    );
-                }
-
-                status.innerHTML =
-                    `
-                    <div class="success">
-                        ✅ Upload Success
-                        <br><br>
-                        Story: ${story}
-                        <br>
-                        File: ${fileName}.txt
-                    </div>
-                    `;
-            }
-            catch (error) {
-
-                console.error(error);
-
-                status.innerHTML =
-                    `
-                    <div class="error">
-                        ❌ Upload Failed
-                        <br><br>
-                        ${error.message}
-                    </div>
-                    `;
-            }
-        }
-
-        async function createKey(
-            password
+        if (
+            !story ||
+            !fileName ||
+            !password ||
+            !content
         ) {
 
-            const encoder =
-                new TextEncoder();
+            status.innerHTML =
+                `
+                <div class="error">
+                    Vui lòng nhập đầy đủ thông tin.
+                </div>
+                `;
 
-            const passwordBuffer =
-                encoder.encode(
+            return;
+        }
+
+        try {
+
+            status.innerHTML =
+                `
+                <div class="loading">
+                    Đang encrypt và upload...
+                </div>
+                `;
+
+            const encrypted =
+                await encryptText(
+                    content,
                     password
                 );
 
-            const hash =
-                await crypto.subtle.digest(
-                    "SHA-256",
-                    passwordBuffer
+            const githubPath =
+                `ProjectsSecret/data/${story}/${fileName}.txt`;
+
+            const apiUrl =
+                `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${githubPath}`;
+
+            const response =
+                await fetch(
+                    apiUrl,
+                    {
+                        method: "PUT",
+
+                        headers: {
+                            "Authorization":
+                                `Bearer ${GITHUB_TOKEN}`,
+
+                            "Content-Type":
+                                "application/json"
+                        },
+
+                        body:
+                        JSON.stringify(
+                        {
+                            message:
+                                `Add ${fileName}.txt`,
+
+                            content:
+                                btoa(
+                                    encrypted
+                                )
+                        })
+                    }
                 );
 
-            return crypto.subtle.importKey(
-                "raw",
-                hash,
-                "AES-GCM",
-                false,
-                [
-                    "encrypt",
-                    "decrypt"
-                ]
-            );
-        }
+            if (!response.ok) {
 
-        function arrayBufferToBase64(
-            buffer
+                const errorText =
+                    await response.text();
+
+                throw new Error(
+                    errorText
+                );
+            }
+
+            status.innerHTML =
+                `
+                <div class="success">
+                    ✅ Upload Success
+                    <br><br>
+                    Story:
+                    ${story}
+                    <br>
+                    File:
+                    ${fileName}.txt
+                </div>
+                `;
+        }
+        catch (error) {
+
+            console.error(error);
+
+            status.innerHTML =
+                `
+                <div class="error">
+                    ❌ Upload Failed
+                    <br><br>
+                    ${error.message}
+                </div>
+                `;
+        }
+    }
+
+    async function createKey(
+        password
+    ) {
+
+        const encoder =
+            new TextEncoder();
+
+        const passwordBuffer =
+            encoder.encode(
+                password
+            );
+
+        const hash =
+            await crypto.subtle.digest(
+                "SHA-256",
+                passwordBuffer
+            );
+
+        return crypto.subtle.importKey(
+            "raw",
+            hash,
+            "AES-GCM",
+            false,
+            [
+                "encrypt",
+                "decrypt"
+            ]
+        );
+    }
+
+    function arrayBufferToBase64(
+        buffer
+    ) {
+
+        let binary = '';
+
+        const bytes =
+            new Uint8Array(
+                buffer
+            );
+
+        for (
+            let i = 0;
+            i < bytes.length;
+            i++
         ) {
 
-            let binary = '';
-
-            const bytes =
-                new Uint8Array(
-                    buffer
+            binary +=
+                String.fromCharCode(
+                    bytes[i]
                 );
+        }
 
-       
+        return btoa(binary);
+    }
+
+    function base64ToArrayBuffer(
+        base64
+    ) {
+
+        const binary =
+            atob(base64);
+
+        const bytes =
+            new Uint8Array(
+                binary.length
+            );
+
+        for (
+            let i = 0;
+            i < binary.length;
+            i++
+        ) {
+
+            bytes[i] =
+                binary.charCodeAt(i);
+        }
+
+        return bytes;
+    }
+
+    async function encryptText(
+        text,
+        password
+    ) {
+
+        const key =
+            await createKey(
+                password
+            );
+
+        const iv =
+            crypto.getRandomValues(
+                new Uint8Array(12)
+            );
+
+        const encodedText =
+            new TextEncoder()
+                .encode(text);
+
+        const encrypted =
+            await crypto.subtle.encrypt(
+                {
+                    name: "AES-GCM",
+                    iv: iv
+                },
+                key,
+                encodedText
+            );
+
+        const combined =
+            new Uint8Array(
+                iv.length +
+                encrypted.byteLength
+            );
+
+        combined.set(
+            iv,
+            0
+        );
+
+        combined.set(
+            new Uint8Array(
+                encrypted
+            ),
+            iv.length
+        );
+
+        return arrayBufferToBase64(
+            combined
+        );
+    }
+
+</script>
+
+</body>
+
+</html>
