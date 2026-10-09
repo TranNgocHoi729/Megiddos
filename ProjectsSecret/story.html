@@ -240,9 +240,7 @@
             );
 
         try {
-
-            const url =
-                `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/data/${story}`;
+            const url = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/ProjectsSecret/data/${story}`;
 
             const response =
                 await fetch(url);
