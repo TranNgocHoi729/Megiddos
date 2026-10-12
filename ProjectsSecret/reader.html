@@ -149,6 +149,33 @@
 
     <script>
 
+    let allChapters = [];
+    async function loadChapterList() {
+        const response =
+            await fetch(
+                `https://api.github.com/repos/TranNgocHoi729/Megiddos/contents/ProjectsSecret/data/${story}`
+            );
+    
+        const data =
+            await response.json();
+    
+        allChapters =
+            data
+                .filter(
+                    x =>
+                        x.type === "file"
+                )
+                .sort(
+                    (a, b) =>
+                        a.name.localeCompare(
+                            b.name,
+                            undefined,
+                            {
+                                numeric: true
+                            }
+                        )
+                );
+    }    
     const params = new URLSearchParams(
         window.location.search
     );
@@ -377,16 +404,59 @@
 
     function goPrevious() {
 
-        alert(
-            "Coming Soon"
-        );
+        const currentIndex =
+            allChapters.findIndex(
+                x =>
+                    x.name === chapter
+            );
+    
+        if (
+            currentIndex <= 0
+        ) {
+    
+            alert(
+                "Đây là chapter đầu tiên"
+            );
+    
+            return;
+        }
+    
+        const previous =
+            allChapters[
+                currentIndex - 1
+            ];
+    
+        window.location.href =
+            `reader.html?story=${encodeURIComponent(story)}&chapter=${encodeURIComponent(previous.name)}`;
     }
 
     function goNext() {
-
-        alert(
-            "Coming Soon"
-        );
+    
+        const currentIndex =
+            allChapters.findIndex(
+                x =>
+                    x.name === chapter
+            );
+    
+        if (
+            currentIndex >=
+            allChapters.length - 1
+        ) {
+    
+            alert(
+                "Đây là chapter cuối cùng"
+            );
+    
+            return;
+        }
+    
+        const next =
+            allChapters[
+                currentIndex + 1
+            ];
+    
+        window.location.href =
+            `reader.html?story=${encodeURIComponent(story)}&chapter=${encodeURIComponent(next.name)}`;
     }
 
 </script>
