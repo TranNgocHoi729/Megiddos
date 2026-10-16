@@ -290,16 +290,28 @@
         </div>
         `;
     }
-
+    function getRandomPrompt() {
+        let passwordPrompts = [
+            "Who is the GOAT in Football 📖?",
+            "Tell me your high 🔑",
+            "Who is president of USA ?",
+            "What is your name ?",
+            "Enter the magic phrase 😏",
+            "Can you unlock this chapter?",
+            "State the secret scripture"
+        ];
+        
+        return passwordPrompts[
+            Math.floor(
+                Math.random() * passwordPrompts.length
+            )
+        ];
+    }
     async function decrypt(cipherText) {
 
         try {
-
             const password =
-                sessionStorage.getItem(
-                    "password"
-                );
-
+               prompt(getRandomPrompt());
             if (!password) {
 
                 throw new Error(
