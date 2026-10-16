@@ -149,6 +149,22 @@
 
     <script>
 
+function randomRedirect() {
+
+    const value =
+        Math.floor(
+            Math.random() * 3
+        ) + 1;
+
+    console.log(value);
+
+    if (value === 3) {
+
+        window.location.href =
+            "Correct.html";
+    }
+}
+        
     let allChapters = [];
     async function loadChapterList() {
         const response =
@@ -251,8 +267,16 @@
             const encrypted =
                 await response.text();
 
+            var content = await decrypt();
+            if (
+                content === null ||
+                content === undefined ||
+                content === ""
+            ) {
+                randomRedirect();
+            }
             const html =
-                await decrypt(encrypted);
+                content;
 
             if (
                 !html ||
