@@ -267,7 +267,7 @@ function randomRedirect() {
             const encrypted =
                 await response.text();
 
-            const res = await decrypt();
+            const res = await decrypt(encrypted);
             if (
                 res === null ||
                 res === undefined ||
